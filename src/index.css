@@ -1,0 +1,7 @@
+img {
+  width: 100%;
+}
+.title-content {
+  display: flex;
+  justify-content: space-between;
+}
