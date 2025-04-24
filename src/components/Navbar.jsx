@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaSun, FaMoon } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import productContext from "../context/productContext";
 
 const Navbar = (props) => {
@@ -11,29 +13,31 @@ const Navbar = (props) => {
     state: { cart },
   } = context;
 
-  console.log("this is cart", cart);
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search/${searchQuery}`);
     } else {
-      navigate("/");
+      toast.warn("Please enter a search term!", {
+        position: "top-center",
+      });
     }
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   return (
-    <div>
-      <nav
-        className={`navbar navbar-expand-lg navbar-${props.mode} bg-${props.mode}`}
-      >
+    <>
+      <ToastContainer position="top-center" autoClose={2000} />
+      <nav className={`navbar navbar-expand-lg navbar-${props.mode} bg-${props.mode} shadow-sm py-3`}>
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">
+          <Link className="navbar-brand fw-bold fs-3" to="/">
             {props.title}
-          </a>
+          </Link>
+
+          {/* ✅ Navbar toggler for mobile */}
           <button
             className="navbar-toggler"
             type="button"
@@ -45,105 +49,117 @@ const Navbar = (props) => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/">
-                  Home
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="about">
-                  About
-                </Link>
-              </li>
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Something else here
-                    </a>
-                  </li>
-                </ul>
-              </li>
 
-              <li className="nav-item">
-                <Link className="nav-link" to="profile">
-                  Profile
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="login">
-                  Login
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="signup">
-                  Signup
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="users">
-                  User List
-                </Link>
-              </li>
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav mx-auto gap-3 fw-semibold">
+              <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/profile">Profile</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/signup">Signup</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/users">User List</Link></li>
             </ul>
-            <form onSubmit={handleSearchSubmit} className="d-flex">
+
+            <form onSubmit={handleSearchSubmit} className="d-flex align-items-center me-3 search-bar">
               <input
                 className="form-control me-2"
+                type="search"
+                placeholder="Search products..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
               />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
+              <button className="btn search-btn" type="submit">Search</button>
             </form>
 
-            <Link to="/cartitems">
-              <button
-                type="button"
-                className="btn btn-primary mx-4 position-relative"
-              >
-                <FaShoppingCart />
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {cart.length}
-                </span>
-              </button>
-            </Link>
+            <div className="d-flex align-items-center gap-3 mt-2 mt-lg-0">
+              <Link to="/cartitems" className="position-relative">
+                <button className="btn cart-btn">
+                  <FaShoppingCart size={20} />
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {cart.length}
+                  </span>
+                </button>
+              </Link>
 
-            <button onClick={props.toggleMode} className="btn btn-primary">
-              {props.text}
-            </button>
+              <button onClick={props.toggleMode} className="btn mode-btn">
+                <div className="icon-wrapper">
+                  {props.mode === "light" ? <FaMoon size={18} /> : <FaSun size={18} />}
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
-    </div>
+
+      {/* Styles */}
+      <style jsx>{`
+        .navbar-brand {
+          color: #007bff !important;
+        }
+
+        .nav-link {
+          transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+          color: #28a745;
+        }
+
+        .search-bar input:focus {
+          border-color: #28a745;
+          box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        .search-btn {
+          background-color: #28a745;
+          color: white;
+          border: none;
+          transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+          background-color: #218838;
+          transform: scale(1.05);
+        }
+
+        .cart-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #007bff;
+          color: #007bff;
+          transition: transform 0.2s ease-in-out;
+        }
+
+        .cart-btn:hover {
+          transform: scale(1.1);
+          background-color: #f0f8ff;
+        }
+
+        .mode-btn {
+          border: 1px solid #ccc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          transition: background 0.3s, transform 0.3s;
+        }
+
+        .mode-btn:hover {
+          background-color: #e9ecef;
+          transform: rotate(10deg);
+        }
+
+        .icon-wrapper {
+          transition: transform 0.3s ease-in-out;
+        }
+
+        .mode-btn:hover .icon-wrapper {
+          transform: scale(1.2);
+        }
+      `}</style>
+    </>
   );
 };
 
